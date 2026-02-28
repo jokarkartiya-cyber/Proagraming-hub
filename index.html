@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NextRise Premium Programming Hub</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
+body{
+transition:0.4s;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+}
+body.light{
+background:#f5f5f5;
+color:#111;
+}
+header{
+padding:20px;
+text-align:center;
+background:#111;
+font-size:22px;
+font-weight:bold;
+position:sticky;
+top:0;
+z-index:100;
+}
+body.light header{
+background:#fff;
+color:#111;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+.top-controls{
+display:flex;
+justify-content:center;
+gap:15px;
+margin-top:15px;
+flex-wrap:wrap;
+}
+input{
+padding:8px 15px;
+border-radius:20px;
+border:none;
+width:250px;
+}
+.toggle{
+padding:8px 15px;
+border-radius:20px;
+border:none;
+cursor:pointer;
+background:#00ffcc;
+font-weight:bold;
+}
+.section{
+padding:40px 30px;
+text-align:center;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:20px;
+margin-top:30px;
+}
+.card{
+background:rgba(255,255,255,0.08);
+padding:18px;
+border-radius:15px;
+transition:0.4s;
+animation:fadeIn 0.6s ease forwards;
+}
+body.light .card{
+background:white;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+.card:hover{
+transform:translateY(-8px);
+}
+button{
+width:100%;
+padding:8px;
+margin-top:10px;
+border:none;
+border-radius:20px;
+cursor:pointer;
+font-weight:bold;
+background:#00ffcc;
+color:black;
+}
+.progress-btn{
+background:#ffcc00;
+}
+.completed{
+background:#00ff88 !important;
+}
+.progress-bar{
+height:8px;
+background:#333;
+border-radius:10px;
+margin:20px auto;
+width:60%;
+overflow:hidden;
+}
+.progress-fill{
+height:100%;
+width:0%;
+background:#00ffcc;
+transition:0.5s;
+}
+.modal{
+display:none;
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:rgba(0,0,0,0.95);
+justify-content:center;
+align-items:center;
+z-index:1000;
+}
+.modal-content{
+width:95%;
+max-width:1100px;
+position:relative;
+}
+iframe{
+width:100%;
+height:550px;
+border-radius:12px;
+}
+.close{
+position:absolute;
+top:-45px;
+right:0;
+background:red;
+color:white;
+padding:8px 15px;
+border-radius:20px;
+cursor:pointer;
+}
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(15px);}
+to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+🔥 NextRise Premium Programming Hub
+<div class="top-controls">
+<input type="text" id="search" placeholder="Search course...">
+<button class="toggle" onclick="toggleTheme()">🌙 Dark/Light</button>
+</div>
+<div class="progress-bar">
+<div class="progress-fill" id="progressFill"></div>
+</div>
+</header>
+
+<section class="section">
+<h2>All Courses</h2>
+<div class="grid" id="courseGrid"></div>
+</section>
+
+<div class="modal" id="modal">
+<div class="modal-content">
+<div class="close" onclick="closeVideo()">Close</div>
+<iframe id="frame" src="" allowfullscreen></iframe>
+</div>
+</div>
+
+<script>
+
+let courses = [
+
+/* ===== APNA COLLEGE ===== */
+
+{title:"Apna College DSA", type:"playlist", id:"PLfqMhTWNBTe0gqgFk-CUE-ktO5Cek1GdP"},
+{title:"Apna College Advanced DSA", type:"playlist", id:"PLfqMhTWNBTe137I_EPQd34TsgV6IO55pt"},
+{title:"Apna College Java + DSA", type:"playlist", id:"PLfqMhTWNBTe3LtFWcvwpqTkUSlB32kJop"},
+{title:"Apna College C++ Full Course", type:"playlist", id:"PLfqMhTWNBTe0b2nM6JHVCnAkhQRGiZMSJ"},
+{title:"Apna College Web Development", type:"playlist", id:"PLfqMhTWNBTe2MZK2V9hZlT6DkHnX2yMlB"},
+{title:"Apna College Python", type:"playlist", id:"PLfqMhTWNBTe3HfGJ4K2YH2S1fF6e6iXqk"},
+
+/* ===== PW COURSES ===== */
+
+{title:"PW DSA in Python", type:"playlist", id:"PLxgZQoSe9cg17r-kBHwn3C79WdBzt00n_"},
+{title:"PW Web Development", type:"playlist", id:"PLxgZQoSe9cg3nYj7t9j6gM3M2k1HkzVnA"},
+{title:"PW C++ One Shot", type:"video", id:"sv1ofY9B1q0"},
+{title:"PW C Programming One Shot", type:"video", id:"rQoqCP7LX60"},
+{title:"PW Java One Shot", type:"video", id:"UmnCZ7-9yDY"},
+
+/* ===== OTHER COURSES ===== */
+
+{title:"HTML Full Course", type:"playlist", id:"PLu0W_9lII9aiL0kysYlfSOUgY5rNlOhUd"},
+{title:"CSS Complete Playlist", type:"playlist", id:"PLu0W_9lII9agx66oZnT6IyhcMIbUMNMdt"},
+{title:"JavaScript Full Course", type:"playlist", id:"PLu0W_9lII9ajyk081To1CbtMcm6d7qmh_"},
+{title:"Python Complete Course", type:"playlist", id:"PLu0W_9lII9ajLcqRcj4PoEihkukF_OTzA"},
+{title:"Java Full Course", type:"playlist", id:"PLsyeobzWxl7pe_IiTfNyr55kwJPWbgxB5"},
+{title:"Machine Learning", type:"playlist", id:"PLKnIA16_RmvY5eP91BGPa0vXUYmIdtfPQ"},
+{title:"Cyber Security", type:"video", id:"U_P23SqJaDc"},
+{title:"Data Science", type:"video", id:"ua-CiDNNj30"},
+{title:"MongoDB", type:"video", id:"c2M-rlkkT5o"},
+{title:"MySQL", type:"video", id:"7S_tz1z_5bA"},
+{title:"Operating System", type:"video", id:"26QPDBe-NB8"},
+{title:"Computer Networks", type:"video", id:"qiQR5rTSshw"}
+
+];
+
+let completed = JSON.parse(localStorage.getItem("completed")) || [];
+
+function renderCourses(){
+let grid=document.getElementById("courseGrid");
+grid.innerHTML="";
+courses.forEach((c,index)=>{
+let isDone = completed.includes(index);
+grid.innerHTML+=`
+<div class="card">
+<h3>${c.title}</h3>
+<button onclick="openMedia('${c.type}','${c.id}')">
+${c.type==="playlist" ? "Open Playlist" : "Watch Video"}
+</button>
+<button class="progress-btn ${isDone?'completed':''}" 
+onclick="markComplete(${index})">
+${isDone?"Completed ✅":"Mark Complete"}
+</button>
+</div>`;
+});
+updateProgress();
+}
+
+function openMedia(type,id){
+let url = type==="playlist"
+? "https://www.youtube.com/embed/videoseries?list="+id
+: "https://www.youtube.com/embed/"+id;
+document.getElementById("frame").src=url;
+document.getElementById("modal").style.display="flex";
+}
+
+function closeVideo(){
+document.getElementById("modal").style.display="none";
+document.getElementById("frame").src="";
+}
+
+function toggleTheme(){
+document.body.classList.toggle("light");
+}
+
+function markComplete(index){
+if(!completed.includes(index)){
+completed.push(index);
+}
+localStorage.setItem("completed",JSON.stringify(completed));
+renderCourses();
+}
+
+function updateProgress(){
+let percent = (completed.length / courses.length) * 100;
+document.getElementById("progressFill").style.width = percent + "%";
+}
+
+document.getElementById("search").addEventListener("keyup",function(){
+let value=this.value.toLowerCase();
+let cards=document.querySelectorAll(".card");
+cards.forEach(card=>{
+let text=card.innerText.toLowerCase();
+card.style.display = text.includes(value) ? "block" : "none";
+});
+});
+
+renderCourses();
+
+</script>
+
+</body>
+</html>
